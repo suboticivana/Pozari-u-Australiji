@@ -1,0 +1,239 @@
+
+var granica = granice.filter(ee.Filter.eq('country_na', 'Australia'));
+print(granica);
+Map.centerObject(granica,4.5);
+
+Map.setOptions('SATELLITE');
+
+//2017. godina
+var dataset = ee.ImageCollection('MODIS/061/MCD64A1')
+                  .filter(ee.Filter.date('2017-01-01', '2018-01-01'));
+var burnedArea1 = dataset.select('BurnDate');
+var burnedAreaVis = {
+  min: 30,
+  max: 341,
+  palette: ['red'],
+};
+
+//Map.addLayer(burnedArea1, burnedAreaVis, '2017. godina');
+
+//2018. godina
+var dataset1 = ee.ImageCollection('MODIS/061/MCD64A1')
+                 .filter(ee.Filter.date('2018-01-01','2019-01-01'));
+
+var burnedArea11 = dataset1.select('BurnDate');
+var burnedAreaVis11 = {
+  min:45,
+  max:362,
+  palette: 'yellow',
+};
+Map.addLayer(burnedArea11, burnedAreaVis11, '2018. godina')
+
+
+//2019. godina
+var dataset2 = ee.ImageCollection('MODIS/061/MCD64A1')
+                  .filter(ee.Filter.date('2019-01-01', '2020-01-01'));
+var BurnedArea2 = dataset2.select('BurnDate');
+var BurnedAreaVis2 = {
+  min: 2,
+  max:365,
+  palette: 'green', 
+};
+//Map.addLayer(BurnedArea2,BurnedAreaVis2, '2019. godina');
+
+//2020. godina
+var dataset3 = ee.ImageCollection('MODIS/061/MCD64A1')
+                  .filter(ee.Filter.date('2020-01-01', '2021-01-01'));
+var BurnedArea3 = dataset3.select('BurnDate');
+var BurnedAreaVis3 = {
+  min: 2,
+  max:365,
+  palette: 'blue', 
+};
+//Map.addLayer(BurnedArea3,BurnedAreaVis3, '2020. godina');
+
+//2021. godina
+var dataset4 = ee.ImageCollection('MODIS/061/MCD64A1')
+                  .filter(ee.Filter.date('2021-01-01', '2022-01-01'));
+                  
+var burnedArea4 = dataset4.select('BurnDate');
+var burnedAreaVis4 = {
+  min: 86,
+  max:362,
+  palette: 'black',
+};
+//Map.addLayer(burnedArea4,burnedAreaVis4, '2021. godina');
+
+//2022. godina
+var dataset5 = ee.ImageCollection('MODIS/061/MCD64A1')
+                  .filter(ee.Filter.date('2022-01-01', '2023-01-01'));
+                  
+var burnedArea5 = dataset5.select('BurnDate');
+var burnedAreaVis5 = {
+  min: 86,
+  max:362,
+  palette: '0D616F',
+};
+//Map.addLayer(burnedArea5,burnedAreaVis5, '2022. godina');
+
+//2023. godina  
+var dataset6 = ee.ImageCollection('MODIS/061/MCD64A1')
+                  .filter(ee.Filter.date('2023-01-01', '2024-01-01'));
+                  
+var burnedArea6 = dataset6.select('BurnDate');
+var burnedAreaVis6 = {
+  min: 86,
+  max:362,
+  palette: '472d30',
+};
+//Map.addLayer(burnedArea6,burnedAreaVis6, '2023. godina');
+
+
+
+var mapPanel = ui.Map();
+mapPanel.setControlVisibility(
+    {all: false, zoomControl: true, mapTypeControl: true});
+  
+var header = ui.Label('Australija', {fontSize: '30px', color: 'red'});
+var text = ui.Label(
+    'Prikaz požara koji su se desili na teritoriji Australije u periodu 2017 - 2023. godine',
+    {fontSize: '13px'});
+
+var toolPanel = ui.Panel([header, text], 'flow', {width: '300px'});
+ui.root.widgets().add(toolPanel);
+
+var link = ui.Label(
+    'Story Map', {},
+    'https://arcg.is/PWGim0');
+    var linkPanel = ui.Panel(
+    [ui.Label('Za više informacija posetiti link:', {fontWeight: 'bold'}), link]);
+toolPanel.add(linkPanel);
+
+
+//Legenda 
+// Pozicioniranje panela
+var legend = ui.Panel({
+  style: {
+    position: 'bottom-right',
+    padding: '8px 15px'
+  }
+});
+ 
+// Kreiranje naslova legenda i podesavanje velicine slova i ostalih parametara
+var legendTitle = ui.Label({
+  value: 'Legenda',
+  style: {
+    fontWeight: 'bold',
+    fontSize: '16px',
+    margin: '0 0 4px 0',
+    padding: '0'
+    }
+});
+legend.add(legendTitle);
+
+toolPanel.add(legend);
+ 
+// Kreiranje i stilizovanje prvog reda legende 
+var makeRow = function(color, name) {
+ 
+      // Kreiranje boje pored naziva 
+      var colorBox = ui.Label({
+        style: {
+          backgroundColor: '#' + color,
+          // Koriscenje paddinga kako bi podesili visinu i sirinu 'kutije'
+          padding: '8px',
+          margin: '0 0 4px 0'
+        }
+      });
+ 
+      // Kreiranje opisa pored boje
+      var description = ui.Label({
+        value: name,
+        style: {margin: '0 0 4px 6px'}
+      });
+ 
+     
+      return ui.Panel({
+        widgets: [colorBox, description],
+        layout: ui.Panel.Layout.Flow('horizontal')
+      });
+};
+ 
+//  Paleta, boje i nazivi
+var palette =['FF0000','FFFF00' ,'67FF45','000000','0000FF','0D616F', '472d30'];
+ 
+//nazivi u legendi
+var names = ['2017.godina ','2018. godina','2019. godina','2020. godina',' 2021. godina ','2022. godina', '2023. godina'];
+ 
+
+for (var i = 0; i < 7; i++) {
+  legend.add(makeRow(palette[i], names[i]));
+  }  
+ 
+palette = ['FF0000','FFFF00' ,'67FF45','000000','0000FF','0D616F', '472d30'];
+var total = ee.ImageCollection('MODIS/061/MCD64A1');
+var viz = {min:1,max:6,palette:palette};
+var mainVis = total.visualize;
+  
+var viz = {min:1,max:6,palette:palette};
+var MAIN = 'Default map';
+var jedan = '2017. godina';
+var dva = '2018. godina';
+var tri = '2019. godina';
+var cetiri = '2020. godina';
+var pet = '2021. godina'
+var sest = '2022. godina'
+var sedam  = '2023. godina'
+
+// Kreiranje naziva i padajuceg menija
+var label = ui.Label('Izaberi godinu za prikaz: ');
+var select = ui.Select({
+  items: [MAIN, jedan, dva, tri, cetiri, pet, sest, sedam],
+  value: MAIN,
+  onChange: redraw,
+  style: {stretch:'horizontal'}
+});
+// Panel koji sadrzi boje i parametri postavljanja 
+var panel = ui.Panel({
+  widgets: [label, select],
+  layout: ui.Panel.Layout.flow('vertical'),
+  style: {
+    position: 'top-left',
+    width: '300px',
+    padding: '10px'
+  }
+});
+// Dodavanje na mapu
+Map.add(panel);
+
+//Funkcija 
+function redraw() {
+  Map.layers().reset();
+  var layer = select.getValue();
+  var slika;
+  if (layer == MAIN) {
+    slika = mainVis;
+  } else if (layer == jedan) {
+    slika = burnedArea1;
+    Map.addLayer(slika, burnedAreaVis, '2017. godina');
+  } else if (layer == dva) {
+    slika = burnedArea11;
+    Map.addLayer(slika, burnedAreaVis11, '2018. godina');
+  } else if (layer == tri) {
+    slika = BurnedArea2;
+    Map.addLayer(slika, BurnedAreaVis2, '2019. godina');
+  } else if (layer == cetiri){
+    slika = BurnedArea3;
+    Map.addLayer(slika, BurnedAreaVis3, '2020. godina');
+  } else if (layer == pet){
+    slika = burnedArea4;
+    Map.addLayer(slika, burnedAreaVis4, '2021. godina');
+  } else if (layer == sest){
+    slika = burnedArea5;
+    Map.addLayer(slika, burnedAreaVis5, '2022. godina');
+  } else if (layer == sedam){
+    slika = burnedArea6;
+    Map.addLayer(slika, burnedAreaVis6, '2023. godina');
+  }
+}
+redraw();
